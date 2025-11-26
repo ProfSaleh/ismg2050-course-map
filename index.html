@@ -1,0 +1,622 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>ISMG 2050: Business Problem Solving Tools</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <style>
+    :root {
+      --bg-main: #020617;
+      --bg-panel: #020617;
+      --bg-hero: radial-gradient(circle at top, #1f2937 0, #020617 55%);
+      --text-main: #e5e7eb;
+      --text-muted: #9ca3af;
+      --accent: #38bdf8;
+      --accent-soft: rgba(56, 189, 248, 0.18);
+      --card-bg: #020617;
+      --card-border: #1f2937;
+      --radius-lg: 1.5rem;
+      --radius-md: 1rem;
+      --shadow-soft: 0 20px 50px rgba(0, 0, 0, 0.5);
+      --transition-fast: 0.18s ease-out;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
+        sans-serif;
+      background: var(--bg-main);
+      color: var(--text-main);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    a {
+      color: inherit;
+      text-decoration: none;
+    }
+
+    /* NAVBAR */
+    .navbar {
+      position: sticky;
+      top: 0;
+      z-index: 20;
+      background: linear-gradient(
+        to bottom,
+        rgba(15, 23, 42, 0.98),
+        rgba(15, 23, 42, 0.9),
+        rgba(15, 23, 42, 0.7)
+      );
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid rgba(148, 163, 184, 0.25);
+    }
+
+    .navbar-inner {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0.7rem 1.5rem;
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    .nav-title {
+      display: flex;
+      flex-direction: column;
+      gap: 0.1rem;
+    }
+
+    .nav-title span.code {
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      color: var(--text-muted);
+    }
+
+    .nav-title h1 {
+      font-size: 1.1rem;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+    }
+
+    .nav-pill {
+      width: 10px;
+      height: 10px;
+      border-radius: 999px;
+      background: var(--accent);
+      box-shadow: 0 0 0 4px rgba(56, 189, 248, 0.25);
+    }
+
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      font-size: 0.85rem;
+      color: var(--text-muted);
+    }
+
+    .nav-links a {
+      padding: 0.25rem 0.6rem;
+      border-radius: 999px;
+      transition: background var(--transition-fast), color var(--transition-fast);
+    }
+
+    .nav-links a:hover {
+      background: rgba(15, 23, 42, 0.9);
+      color: #e5e7eb;
+    }
+
+    .nav-chip {
+      padding: 0.15rem 0.55rem;
+      border-radius: 999px;
+      border: 1px solid rgba(148, 163, 184, 0.4);
+      font-size: 0.7rem;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--text-muted);
+    }
+
+    /* MAIN WRAPPER */
+    .page {
+      flex: 1;
+      padding: 1.8rem 1.5rem 2rem;
+      display: flex;
+      justify-content: center;
+      background: var(--bg-hero);
+    }
+
+    .content {
+      width: 100%;
+      max-width: 1200px;
+    }
+
+    /* HERO */
+    .hero {
+      display: grid;
+      grid-template-columns: minmax(0, 2.2fr) minmax(0, 1.8fr);
+      gap: 2rem;
+      margin-bottom: 2rem;
+      align-items: center;
+    }
+
+    @media (max-width: 900px) {
+      .hero {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .hero-main-title {
+      font-size: clamp(1.8rem, 3.1vw, 2.5rem);
+      margin-bottom: 0.5rem;
+    }
+
+    .hero-badge-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+      align-items: center;
+      margin-bottom: 0.6rem;
+    }
+
+    .hero-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.3rem;
+      padding: 0.15rem 0.6rem;
+      border-radius: 999px;
+      font-size: 0.75rem;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      border: 1px solid rgba(148, 163, 184, 0.4);
+      color: var(--text-muted);
+      background: rgba(15, 23, 42, 0.7);
+    }
+
+    .hero-desc {
+      color: var(--text-muted);
+      max-width: 650px;
+      font-size: 0.95rem;
+      line-height: 1.5;
+      margin-bottom: 1rem;
+    }
+
+    .hero-meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.75rem;
+      font-size: 0.8rem;
+      color: var(--text-muted);
+    }
+
+    .meta-item {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      padding: 0.2rem 0.6rem;
+      border-radius: 999px;
+      background: rgba(15, 23, 42, 0.85);
+      border: 1px solid rgba(148, 163, 184, 0.4);
+    }
+
+    .meta-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 999px;
+      background: var(--accent);
+    }
+
+    .hero-panel {
+      background: rgba(15, 23, 42, 0.95);
+      border-radius: 1.5rem;
+      padding: 1.3rem 1.4rem;
+      border: 1px solid rgba(148, 163, 184, 0.25);
+      box-shadow: var(--shadow-soft);
+      backdrop-filter: blur(12px);
+    }
+
+    .hero-panel h2 {
+      font-size: 1rem;
+      margin-bottom: 0.4rem;
+    }
+
+    .hero-panel p {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      margin-bottom: 0.8rem;
+    }
+
+    .hero-panel ul {
+      list-style: disc;
+      margin-left: 1.1rem;
+      font-size: 0.85rem;
+      color: var(--text-muted);
+    }
+
+    .hero-panel ul li {
+      margin-bottom: 0.25rem;
+    }
+
+    /* WEEK GRID */
+    .week-section-header {
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      gap: 1rem;
+      margin-bottom: 0.8rem;
+    }
+
+    .week-section-header h2 {
+      font-size: 1.1rem;
+    }
+
+    .week-section-header p {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      max-width: 450px;
+    }
+
+    .week-grid {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 1.1rem;
+    }
+
+    @media (max-width: 1024px) {
+      .week-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+    }
+
+    @media (max-width: 640px) {
+      .week-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .week-card {
+      background: radial-gradient(
+        circle at top left,
+        rgba(56, 189, 248, 0.18),
+        rgba(15, 23, 42, 1)
+      );
+      border-radius: var(--radius-md);
+      border: 1px solid rgba(31, 41, 55, 0.9);
+      padding: 0.85rem 0.95rem;
+      box-shadow: 0 12px 28px rgba(0, 0, 0, 0.55);
+      display: flex;
+      flex-direction: column;
+      gap: 0.4rem;
+      transition: transform var(--transition-fast),
+        box-shadow var(--transition-fast), border-color var(--transition-fast),
+        background 0.22s ease-out;
+      position: relative;
+      overflow: hidden;
+      cursor: pointer;
+    }
+
+    .week-card:hover {
+      transform: translateY(-4px);
+      border-color: rgba(148, 163, 184, 0.75);
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.75);
+      background: radial-gradient(
+        circle at top left,
+        rgba(248, 250, 252, 0.12),
+        rgba(15, 23, 42, 1)
+      );
+    }
+
+    .week-label-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 0.6rem;
+    }
+
+    .week-number {
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      color: var(--text-muted);
+    }
+
+    .week-tag {
+      font-size: 0.72rem;
+      padding: 0.15rem 0.6rem;
+      border-radius: 999px;
+      border: 1px solid rgba(148, 163, 184, 0.45);
+      color: var(--text-muted);
+      background: rgba(15, 23, 42, 0.85);
+    }
+
+    .week-title {
+      font-size: 0.98rem;
+      font-weight: 600;
+    }
+
+    .week-desc {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      line-height: 1.4;
+    }
+
+    .week-link {
+      margin-top: 0.45rem;
+      font-size: 0.8rem;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.35rem;
+      color: var(--accent);
+    }
+
+    .week-link span.icon {
+      font-size: 0.9rem;
+      transition: transform var(--transition-fast);
+    }
+
+    .week-card:hover .week-link span.icon {
+      transform: translateX(2px);
+    }
+
+    footer {
+      border-top: 1px solid rgba(148, 163, 184, 0.25);
+      padding: 0.7rem 1.5rem 1rem;
+      font-size: 0.78rem;
+      color: var(--text-muted);
+      display: flex;
+      justify-content: center;
+      background: #020617;
+    }
+
+    footer-inner {
+      max-width: 1200px;
+      width: 100%;
+    }
+  </style>
+</head>
+<body>
+  <!-- NAVBAR -->
+  <nav class="navbar">
+    <div class="navbar-inner">
+      <div class="nav-title">
+        <span class="code">ISMG 2050</span>
+        <h1>
+          <span class="nav-pill"></span>
+          Business Problem Solving Tools
+        </h1>
+      </div>
+
+      <div class="nav-links">
+        <span class="nav-chip">8-week hybrid • Excel-centered</span>
+        <a href="#weeks">Weeks</a>
+        <a href="#overview">Overview</a>
+      </div>
+    </div>
+  </nav>
+
+  <!-- MAIN CONTENT -->
+  <main class="page">
+    <div class="content">
+      <!-- HERO -->
+      <section class="hero" id="overview">
+        <div>
+          <div class="hero-badge-row">
+            <div class="hero-badge">Course Map</div>
+            <div class="hero-badge">Instructor-facing view</div>
+          </div>
+          <h2 class="hero-main-title">
+            ISMG 2050: Business Problem Solving Tools
+          </h2>
+          <p class="hero-desc">
+            This starter page links to weekly visual maps that connect
+            <strong>topics</strong>, <strong>resources</strong>,
+            <strong>assignments</strong>, and
+            <strong>competencies</strong>. Each week highlights how Excel
+            skills map to real business scenarios and what makes students in
+            this course different.
+          </p>
+
+          <div class="hero-meta">
+            <div class="meta-item">
+              <span class="meta-dot"></span>
+              Excel as a decision-support tool
+            </div>
+            <div class="meta-item">
+              <span class="meta-dot"></span>
+              Practice-heavy, project-based design
+            </div>
+            <div class="meta-item">
+              <span class="meta-dot"></span>
+              Clear link from tasks → competencies
+            </div>
+          </div>
+        </div>
+
+        <aside class="hero-panel">
+          <h2>How to use this course map</h2>
+          <p>
+            Use this dashboard in class, in design meetings, or with TAs to
+            communicate the structure and intent of each week.
+          </p>
+          <ul>
+            <li>
+              Click a week tile below to open its detailed map (topics →
+              resources → assignments → competencies).
+            </li>
+            <li>
+              Align assessments and activities with the weekly competencies.
+            </li>
+            <li>
+              Revise week-level HTML pages as you iterate on the course.
+            </li>
+          </ul>
+        </aside>
+      </section>
+
+      <!-- WEEK GRID -->
+      <section id="weeks">
+        <div class="week-section-header">
+          <h2>Weekly Maps</h2>
+          <p>
+            Each week has (or will have) its own interactive map HTML page.
+            Link your existing Week 1 page as <code>week1.html</code> and add
+            future weeks as you design them.
+          </p>
+        </div>
+
+        <div class="week-grid">
+          <!-- Week 1 -->
+          <a href="week1.html" class="week-card">
+            <div class="week-label-row">
+              <span class="week-number">Week 1</span>
+              <span class="week-tag">Excel Foundations</span>
+            </div>
+            <div class="week-title">Creating and Editing Workbooks</div>
+            <div class="week-desc">
+              Core Excel skills: building workbooks, entering data, basic
+              formulas, formatting, and print setup tied to NFP, consulting,
+              and retail scenarios.
+            </div>
+            <div class="week-link">
+              Open Week 1 map <span class="icon">↗</span>
+            </div>
+          </a>
+
+          <!-- Week 2 -->
+          <a href="week2.html" class="week-card">
+            <div class="week-label-row">
+              <span class="week-number">Week 2</span>
+              <span class="week-tag">Formulas &amp; Functions</span>
+            </div>
+            <div class="week-title">Working with Formulas and Functions</div>
+            <div class="week-desc">
+              Build and audit formulas with relative, absolute, mixed, and 3D
+              references while applying a broad range of Excel functions to
+              realistic business scenarios.
+            </div>
+            <div class="week-link">
+              Open Week 2 map <span class="icon">↗</span>
+            </div>
+          </a>
+
+          <!-- Week 3 -->
+          <a href="week3.html" class="week-card">
+            <div class="week-label-row">
+              <span class="week-number">Week 3</span>
+              <span class="week-tag">Visualization</span>
+            </div>
+            <div class="week-title">Creating and Editing Charts</div>
+            <div class="week-desc">
+              Create and format charts and sparklines, manage chart elements,
+              and choose effective chart types to tell clear visual stories with
+              business data.
+            </div>
+            <div class="week-link">
+              Open Week 3 map <span class="icon">↗</span>
+            </div>
+          </a>
+
+          <!-- Week 4 -->
+          <a href="week4.html" class="week-card">
+            <div class="week-label-row">
+              <span class="week-number">Week 4</span>
+              <span class="week-tag">Summaries</span>
+            </div>
+            <div class="week-title">PivotTables &amp; Summary Reports</div>
+            <div class="week-desc">
+              Use PivotTables and summary tools to turn raw data into
+              decision-ready business insights.
+            </div>
+            <div class="week-link">
+              Open Week 4 map <span class="icon">↗</span>
+            </div>
+          </a>
+
+          <!-- Week 5 -->
+          <a href="week5.html" class="week-card">
+            <div class="week-label-row">
+              <span class="week-number">Week 5</span>
+              <span class="week-tag">Visualization</span>
+            </div>
+            <div class="week-title">Charts and Data Visualization</div>
+            <div class="week-desc">
+              Design effective charts and visuals that communicate key patterns
+              and trends to business stakeholders.
+            </div>
+            <div class="week-link">
+              Open Week 5 map <span class="icon">↗</span>
+            </div>
+          </a>
+
+          <!-- Week 6 -->
+          <a href="week6.html" class="week-card">
+            <div class="week-label-row">
+              <span class="week-number">Week 6</span>
+              <span class="week-tag">Data Management</span>
+            </div>
+            <div class="week-title">Getting and Managing Data</div>
+            <div class="week-desc">
+              Import, clean, sort, filter, and structure real-world data using
+              tables, conditional formatting, and PivotTables to produce
+              analysis-ready datasets.
+            </div>
+            <div class="week-link">
+              Open Week 6 map <span class="icon">↗</span>
+            </div>
+          </a>
+
+          <!-- Week 7 -->
+          <a href="week7.html" class="week-card">
+            <div class="week-label-row">
+              <span class="week-number">Week 7</span>
+              <span class="week-tag">Integration</span>
+            </div>
+            <div class="week-title">Multi-sheet &amp; Linked Models</div>
+            <div class="week-desc">
+              Connect multiple worksheets and build small models that mirror
+              real business processes.
+            </div>
+            <div class="week-link">
+              Open Week 7 map <span class="icon">↗</span>
+            </div>
+          </a>
+
+          <!-- Week 8 -->
+          <a href="week8.html" class="week-card">
+            <div class="week-label-row">
+              <span class="week-number">Week 8</span>
+              <span class="week-tag">Data Tools &amp; Polish</span>
+            </div>
+            <div class="week-title">
+              Exploring Data Tools, Data Types, and Illustrations
+            </div>
+            <div class="week-desc">
+              Consolidate and link data across sheets and workbooks, explore
+              linked data types, add illustrations and hyperlinks, and apply
+              basic workbook security for polished deliverables.
+            </div>
+            <div class="week-link">
+              Open Week 8 map <span class="icon">↗</span>
+            </div>
+          </a>
+        </div>
+      </section>
+    </div>
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+      ISMG 2050 &middot; Business Problem Solving Tools &middot; Course Map
+      Starter Page
+    </div>
+  </footer>
+</body>
+</html>

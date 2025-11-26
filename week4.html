@@ -1,0 +1,620 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>ISMG 2050 – Week 6 Course Map</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <style>
+    :root {
+      --bg-main: #0f172a;
+      --bg-panel: #020617;
+      --text-main: #e5e7eb;
+      --text-muted: #9ca3af;
+      --accent-topics: #fb923c;      /* orange */
+      --accent-resources: #22c55e;   /* green */
+      --accent-assignments: #eab308; /* yellow */
+      --accent-competencies: #38bdf8;/* blue */
+      --card-bg: #020617;
+      --card-border: #1f2937;
+      --radius-lg: 1.5rem;
+      --radius-md: 1rem;
+      --shadow-soft: 0 18px 40px rgba(0, 0, 0, 0.4);
+      --transition-fast: 0.18s ease-out;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
+        sans-serif;
+      background: radial-gradient(circle at top, #1d283a 0, #020617 55%);
+      color: var(--text-main);
+      padding: 2rem;
+      display: flex;
+      justify-content: center;
+    }
+
+    a {
+      color: inherit;
+      text-decoration: none;
+    }
+
+    .page {
+      max-width: 1200px;
+      width: 100%;
+    }
+
+    header {
+      text-align: center;
+      margin-bottom: 2rem;
+    }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      padding: 0.15rem 0.65rem;
+      border-radius: 999px;
+      font-size: 0.8rem;
+      letter-spacing: 0.03em;
+      text-transform: uppercase;
+      background: rgba(148, 163, 184, 0.15);
+      color: var(--text-muted);
+      border: 1px solid rgba(148, 163, 184, 0.3);
+      margin-bottom: 0.7rem;
+    }
+
+    header h1 {
+      font-size: clamp(1.7rem, 3vw, 2.2rem);
+      margin-bottom: 0.4rem;
+    }
+
+    header p {
+      color: var(--text-muted);
+      max-width: 650px;
+      margin: 0.25rem auto 0;
+      font-size: 0.95rem;
+    }
+
+    .back-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.3rem;
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      margin-bottom: 0.75rem;
+    }
+
+    .back-link span.icon {
+      font-size: 0.9rem;
+    }
+
+    .map-container {
+      background: rgba(15, 23, 42, 0.9);
+      border-radius: 1.75rem;
+      padding: 1.8rem;
+      box-shadow: var(--shadow-soft);
+      border: 1px solid rgba(148, 163, 184, 0.25);
+      backdrop-filter: blur(10px);
+    }
+
+    .map-grid {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 1.3rem;
+    }
+
+    @media (max-width: 1024px) {
+      .map-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+    }
+
+    @media (max-width: 720px) {
+      body {
+        padding: 1rem;
+      }
+      .map-container {
+        padding: 1.2rem;
+      }
+      .map-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .lane {
+      position: relative;
+      background: linear-gradient(
+        145deg,
+        rgba(15, 23, 42, 0.96),
+        rgba(15, 23, 42, 0.85)
+      );
+      border-radius: var(--radius-lg);
+      padding: 1rem 0.9rem 1.1rem;
+      border: 1px solid var(--card-border);
+      overflow: hidden;
+    }
+
+    .lane::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      opacity: 0.13;
+      pointer-events: none;
+      background: radial-gradient(circle at top left, #ffffff 0, transparent 60%);
+      mix-blend-mode: screen;
+    }
+
+    .lane-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 0.8rem;
+      margin-bottom: 0.7rem;
+      position: relative;
+      z-index: 1;
+    }
+
+    .lane-title {
+      display: flex;
+      flex-direction: column;
+      gap: 0.05rem;
+    }
+
+    .lane-title span {
+      font-size: 0.7rem;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      color: var(--text-muted);
+    }
+
+    .lane-title h2 {
+      font-size: 1rem;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+    }
+
+    .lane-pill {
+      width: 14px;
+      height: 14px;
+      border-radius: 999px;
+      border: 2px solid rgba(15, 23, 42, 0.9);
+      box-shadow: 0 0 0 2px rgba(15, 23, 42, 0.9);
+    }
+
+    /* lane color accents */
+    .lane-topics .lane-pill {
+      background: var(--accent-topics);
+    }
+    .lane-resources .lane-pill {
+      background: var(--accent-resources);
+    }
+    .lane-assignments .lane-pill {
+      background: var(--accent-assignments);
+    }
+    .lane-competencies .lane-pill {
+      background: var(--accent-competencies);
+    }
+
+    .collapse-btn {
+      background: transparent;
+      border: 1px solid rgba(148, 163, 184, 0.5);
+      color: var(--text-muted);
+      border-radius: 999px;
+      padding: 0.15rem 0.55rem;
+      font-size: 0.75rem;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.3rem;
+      cursor: pointer;
+      transition: background var(--transition-fast),
+        color var(--transition-fast), border-color var(--transition-fast),
+        transform 0.1s ease-out;
+    }
+
+    .collapse-btn:hover {
+      background: rgba(15, 118, 110, 0.2);
+      color: #e5e7eb;
+      border-color: rgba(34, 211, 238, 0.9);
+      transform: translateY(-1px);
+    }
+
+    .collapse-btn span.icon {
+      transition: transform var(--transition-fast);
+      display: inline-block;
+    }
+
+    .collapse-btn[aria-expanded="false"] span.icon {
+      transform: rotate(-90deg);
+    }
+
+    .lane-body {
+      margin-top: 0.25rem;
+      display: grid;
+      gap: 0.55rem;
+      transition: max-height 0.25s ease-out, opacity 0.18s ease-out;
+    }
+
+    .lane-body.collapsed {
+      max-height: 0;
+      opacity: 0;
+      overflow: hidden;
+      pointer-events: none;
+    }
+
+    .lane-body.expanded {
+      max-height: 800px;
+      opacity: 1;
+    }
+
+    .chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.3rem;
+      padding: 0.1rem 0.5rem;
+      border-radius: 999px;
+      font-size: 0.7rem;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      border: 1px solid rgba(148, 163, 184, 0.4);
+      color: var(--text-muted);
+      margin-bottom: 0.3rem;
+    }
+
+    .chip span.dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 999px;
+      background: rgba(148, 163, 184, 0.8);
+    }
+
+    .card {
+      position: relative;
+      background: radial-gradient(
+        circle at top left,
+        rgba(148, 163, 184, 0.18),
+        rgba(15, 23, 42, 0.95)
+      );
+      border-radius: var(--radius-md);
+      padding: 0.6rem 0.65rem;
+      border: 1px solid rgba(31, 41, 55, 0.9);
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.45);
+      font-size: 0.85rem;
+      line-height: 1.35;
+      cursor: default;
+      overflow: hidden;
+      transition: transform var(--transition-fast),
+        box-shadow var(--transition-fast), border-color var(--transition-fast),
+        background 0.22s ease-out;
+    }
+
+    .card:hover {
+      transform: translateY(-3px);
+      border-color: rgba(148, 163, 184, 0.7);
+      box-shadow: 0 18px 35px rgba(0, 0, 0, 0.65);
+      background: radial-gradient(
+        circle at top left,
+        rgba(248, 250, 252, 0.14),
+        rgba(15, 23, 42, 1)
+      );
+    }
+
+    .card-title {
+      font-weight: 600;
+      margin-bottom: 0.25rem;
+    }
+
+    .card-sub {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      margin-bottom: 0.2rem;
+    }
+
+    .card ul {
+      list-style: disc;
+      margin-left: 1.1rem;
+      margin-top: 0.25rem;
+    }
+
+    .card ul li {
+      margin-bottom: 0.1rem;
+    }
+
+    .footer-note {
+      margin-top: 1rem;
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+      flex-wrap: wrap;
+    }
+
+    .legend {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+    }
+
+    .legend-item {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.35rem;
+      font-size: 0.75rem;
+      padding: 0.2rem 0.5rem;
+      border-radius: 999px;
+      background: rgba(15, 23, 42, 0.9);
+      border: 1px solid rgba(148, 163, 184, 0.4);
+    }
+
+    .legend-swatch {
+      width: 10px;
+      height: 10px;
+      border-radius: 999px;
+    }
+
+    .legend-topics {
+      background: var(--accent-topics);
+    }
+    .legend-resources {
+      background: var(--accent-resources);
+    }
+    .legend-assignments {
+      background: var(--accent-assignments);
+    }
+    .legend-competencies {
+      background: var(--accent-competencies);
+    }
+  </style>
+</head>
+
+<body>
+  <main class="page">
+    <header>
+      <a href="index.html" class="back-link">
+        <span class="icon">←</span> Back to course map
+      </a>
+      <div class="badge">
+        <span>ISMG 2050</span> • <span>Week 6 Course Map</span>
+      </div>
+      <h1>Getting and Managing Data</h1>
+      <p>
+        Week 6 focuses on importing, cleaning, transforming, and organizing data so
+        students can turn messy, real-world inputs into structured tables and PivotTables
+        ready for business analysis.
+      </p>
+    </header>
+
+    <section class="map-container">
+      <div class="map-grid">
+        <!-- Weekly Topics Lane -->
+        <section class="lane lane-topics">
+          <div class="lane-header">
+            <div class="lane-title">
+              <span>Content Focus</span>
+              <h2>
+                <span class="lane-pill"></span>
+                Weekly Topics
+              </h2>
+            </div>
+            <button class="collapse-btn" data-target="lane-topics-body" aria-expanded="true">
+              <span class="icon">▼</span>
+              Hide
+            </button>
+          </div>
+          <div id="lane-topics-body" class="lane-body expanded">
+            <div class="chip">
+              <span class="dot"></span> Data Management
+            </div>
+            <div class="card">
+              <ul>
+                <li>Create and format a list as an Excel table</li>
+                <li>Apply Conditional Formatting, Color Scales, Icon Sets, and Data Bars</li>
+                <li>Sort data by one or more columns or by attribute</li>
+                <li>Filter data using AutoFilters and Advanced Filter</li>
+                <li>Use subtotals, groups, and outlines for tabular data</li>
+                <li>Import data from text and database files; export data from a workbook</li>
+                <li>Transform data using Flash Fill and Text functions</li>
+                <li>Build and format a PivotTable</li>
+              </ul>
+            </div>
+          </div>
+        </section>
+
+        <!-- Resources Lane -->
+        <section class="lane lane-resources">
+          <div class="lane-header">
+            <div class="lane-title">
+              <span>Inputs</span>
+              <h2>
+                <span class="lane-pill"></span>
+                Resources
+              </h2>
+            </div>
+            <button class="collapse-btn" data-target="lane-resources-body" aria-expanded="true">
+              <span class="icon">▼</span>
+              Hide
+            </button>
+          </div>
+          <div id="lane-resources-body" class="lane-body expanded">
+            <div class="chip">
+              <span class="dot"></span> Learn &amp; Practice
+            </div>
+
+            <div class="card">
+              <div class="card-title">Excel Chapter – Lists &amp; Tables</div>
+              <div class="card-sub">Textbook</div>
+              <p>
+                Introduces Excel tables, sorting, filtering, and conditional formatting for structured lists.
+              </p>
+            </div>
+
+            <div class="card">
+              <div class="card-title">Demo Videos – Import &amp; Clean Data</div>
+              <div class="card-sub">Short screencasts</div>
+              <ul>
+                <li>Importing text files and database exports</li>
+                <li>Using Flash Fill and Text functions to transform fields</li>
+                <li>Creating subtotals, groups, outlines, and PivotTables</li>
+              </ul>
+            </div>
+
+            <div class="card">
+              <div class="card-title">Data Cleaning &amp; Management Cheat Sheet</div>
+              <div class="card-sub">Handout or PDF</div>
+              <p>
+                Quick reference for sort/filter options, conditional formatting rules,
+                and common Text functions used in data cleanup.
+              </p>
+            </div>
+
+            <div class="card">
+              <div class="card-title">Practice Files – Week 6</div>
+              <div class="card-sub">Canvas • Module 6</div>
+              <p>
+                Sample text files, database exports, and starter lists used for
+                importing, transforming, and summarizing data.
+              </p>
+            </div>
+          </div>
+        </section>
+
+        <!-- Assignments Lane -->
+        <section class="lane lane-assignments">
+          <div class="lane-header">
+            <div class="lane-title">
+              <span>Application</span>
+              <h2>
+                <span class="lane-pill"></span>
+                Assignments
+              </h2>
+            </div>
+            <button class="collapse-btn" data-target="lane-assignments-body" aria-expanded="true">
+              <span class="icon">▼</span>
+              Hide
+            </button>
+          </div>
+          <div id="lane-assignments-body" class="lane-body expanded">
+            <div class="chip">
+              <span class="dot"></span> Realistic Scenarios
+            </div>
+
+            <div class="card">
+              <div class="card-title">Independent Project – Eller Systems</div>
+              <div class="card-sub">Contracts from text file</div>
+              <ul>
+                <li>Transform and import contract data from a text file</li>
+                <li>Sort and filter the imported data for analysis</li>
+                <li>Create an Excel table and apply conditional formatting</li>
+                <li>Build a PivotTable and prepare a subtotal worksheet</li>
+              </ul>
+            </div>
+
+            <div class="card">
+              <div class="card-title">Advanced Project – Placer Hills Real Estate</div>
+              <div class="card-sub">Listing performance &amp; insurance flags</div>
+              <ul>
+                <li>Update and refine the source data for a PivotTable</li>
+                <li>Highlight certain listings for insurance purposes</li>
+                <li>Create a calculated column to determine number of market days</li>
+                <li>Format related data as an Excel table for ongoing reporting</li>
+              </ul>
+            </div>
+          </div>
+        </section>
+
+        <!-- Competencies Lane -->
+        <section class="lane lane-competencies">
+          <div class="lane-header">
+            <div class="lane-title">
+              <span>Student Differentiators</span>
+              <h2>
+                <span class="lane-pill"></span>
+                Competencies
+              </h2>
+            </div>
+            <button class="collapse-btn" data-target="lane-competencies-body" aria-expanded="true">
+              <span class="icon">▼</span>
+              Hide
+            </button>
+          </div>
+          <div id="lane-competencies-body" class="lane-body expanded">
+            <div class="chip">
+              <span class="dot"></span> What Students Can Do
+            </div>
+
+            <div class="card">
+              <div class="card-title">Competency 1</div>
+              <p>
+                Structure, organize, and summarize real-world datasets by using Excel tables,
+                sorting, filtering (including Advanced Filter), conditional formatting, subtotals,
+                groups, outlines, and PivotTables to produce analysis-ready views of the data.
+              </p>
+            </div>
+
+            <div class="card">
+              <div class="card-title">Competency 2</div>
+              <p>
+                Import, clean, and transform data from external text and database files using tools
+                like Flash Fill and Text functions, ensuring that messy source data can be converted
+                into reliable information for business decision-making.
+              </p>
+            </div>
+          </div>
+        </section>
+      </div>
+
+      <div class="footer-note">
+        <span>
+          Week 6 bridges “raw incoming data” and “analysis-ready structure,” emphasizing
+          importing, cleaning, and organizing information for robust reporting.
+        </span>
+        <div class="legend">
+          <div class="legend-item">
+            <span class="legend-swatch legend-topics"></span> Topics
+          </div>
+          <div class="legend-item">
+            <span class="legend-swatch legend-resources"></span> Resources
+          </div>
+          <div class="legend-item">
+            <span class="legend-swatch legend-assignments"></span> Assignments
+          </div>
+          <div class="legend-item">
+            <span class="legend-swatch legend-competencies"></span> Competencies
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    // Simple collapse/expand behavior for each lane
+    document.querySelectorAll(".collapse-btn").forEach((btn) => {
+      btn.addEventListener("click", () => {
+        const targetId = btn.getAttribute("data-target");
+        const body = document.getElementById(targetId);
+        const expanded = btn.getAttribute("aria-expanded") === "true";
+
+        if (expanded) {
+          body.classList.remove("expanded");
+          body.classList.add("collapsed");
+          btn.setAttribute("aria-expanded", "false");
+          btn.lastChild.textContent = " Show";
+        } else {
+          body.classList.remove("collapsed");
+          body.classList.add("expanded");
+          btn.setAttribute("aria-expanded", "true");
+          btn.lastChild.textContent = " Hide";
+        }
+      });
+    });
+  </script>
+</body>
+</html>
